@@ -17,14 +17,37 @@
         )
       ) %>
 
-      <%= render(
-        InputComponent.new(
-          name: "weight_per_pizza",
-          label: "Weight per pizza (grams)",
-          value: @dough.weight.to_i,
-          step: 1,
-        )
-      ) %>
+      <div class="mode-selector">
+        <% if @prefer_flour %>
+          <%= render(
+                InputComponent.new(
+                  name: "flour",
+                  label: "Amount of Flour (grams)",
+                  value: @dough.flour.to_i,
+                  step: 1,
+                  )
+              ) %>
+          <p class="divider">OR</p>
+          <div class="mode-switch-container">
+            <a href="/?preferFlour=false" class="flour-switch">Choose dough size</a>
+          </div>
+        <% else %>
+          <%= render(
+                InputComponent.new(
+                  name: "weight_per_pizza",
+                  label: "Weight per pizza (grams)",
+                  value: @dough.weight.to_i,
+                  step: 1,
+                  )
+              ) %>
+          <p class="divider">OR</p>
+          <div class="mode-switch-container">
+            <a href="/?preferFlour=true" class="flour-switch">Choose flour quantity</a>
+          </div>
+        <% end %>
+
+      </div>
+
 
       <%= render(
         InputComponent.new(

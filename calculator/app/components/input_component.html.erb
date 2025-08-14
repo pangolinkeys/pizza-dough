@@ -9,6 +9,7 @@
     max="<%= @max %>"
     step="<%= @step %>"
     value="<%= @value %>"
-    required
+    <%= "required" if @required %>
+    <%= "disabled" if @disabled %>
   />
 </div>

@@ -107,6 +107,7 @@ a {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
 }
 
 .form-label {
@@ -332,4 +333,57 @@ a {
 .ingredient-amount {
   max-width: 80%;
   overflow: hidden;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #555;
+  width: 100%;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #aaa;
+  }
+
+  &:not(:empty)::before {
+    margin-right: 0.75em;
+  }
+
+  &:not(:empty)::after {
+    margin-left: 0.75em;
+  }
+}
+
+.flour-switch {
+  border: solid #ee5230;
+  text-align: center;
+  padding: 10px;
+  line-height: normal;
+  font-size: 18px;
+  cursor: pointer;
+  color: #ee5230;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin: 10px auto 0 auto;
+}
+
+//.mode-selector {
+//  display: flex;
+//  flex-direction: column;
+//  justify-content: center;
+//  align-items: center;
+//  padding: 5px;
+//  border: solid #aaa;
+//  border-radius: 5px;
+//}
+
+.mode-switch-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

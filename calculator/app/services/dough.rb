@@ -6,8 +6,9 @@ class Dough
   FRESH_YEAST_MODIFIER = 3
   DEFAULT_SOURDOUGH = 0.05
   DEFAULT_SALT = 0.02
+  DEFAULT_FLOUR = 750
 
-  def initialize(hydration:, pizzas:, weight:, dough_type:, salt:, yeast:, sourdough:)
+  def initialize(hydration:, pizzas:, weight:, dough_type:, salt:, yeast:, sourdough:, prefer_flour: "false", flour: nil)
     @hydration = hydration
     @pizzas = pizzas
     @weight = weight
@@ -15,26 +16,48 @@ class Dough
     @salt = salt
     @yeast = yeast
     @sourdough = sourdough
+    @flour = flour
+    @prefer_flour = prefer_flour
   end
-  attr_reader :hydration, :pizzas, :weight, :dough_type, :salt, :yeast, :sourdough
+  attr_reader :hydration, :pizzas, :weight, :dough_type, :salt, :yeast, :sourdough, :flour
 
   def self.from_params(params)
     params = map_legacy_params(params)
     hydration = (params[:hydration] || DEFAULT_HYDRATION).to_f
-    pizzas = params[:pizzas] || DEFAULT_PIZZAS
-    weight = params[:weight_per_pizza] || DEFAULT_WEIGHT
+    pizzas = (params[:pizzas] || DEFAULT_PIZZAS).to_i
     dough_type = params[:dough_type] || "yeast"
-    yeast = params[:yeast] || DEFAULT_DRY_YEAST
-    sourdough = params[:sourdough] || DEFAULT_SOURDOUGH
-    salt = params[:salt] || DEFAULT_SALT
+    yeast = (params[:yeast] || DEFAULT_DRY_YEAST).to_f
+    sourdough = (params[:sourdough] || DEFAULT_SOURDOUGH).to_f
+    salt = (params[:salt] || DEFAULT_SALT).to_f
+    prefer_flour = params[:preferFlour] == "true"
+    flour = (params[:flour] || DEFAULT_FLOUR).to_f
+
+    # Normalize hydration if provided as a percentage
+    hydration = hydration > 1 ? hydration / 100 : hydration
+
+    # Prefer flour if provided: compute weight per pizza from flour and percentages
+    if prefer_flour
+      percentages = if dough_type == "yeast"
+        hydration + salt + yeast
+      else
+        hydration + salt + sourdough
+      end
+      total_dough_weight = flour * (1 + percentages)
+      weight = total_dough_weight / pizzas
+    else
+      weight = (params[:weight_per_pizza] || DEFAULT_WEIGHT).to_f
+    end
+
     new(
-      hydration: hydration > 1 ? hydration / 100 : hydration,
-      pizzas: pizzas.to_i,
-      weight: weight.to_f,
+      hydration: hydration,
+      pizzas: pizzas,
+      weight: weight,
       dough_type: dough_type,
-      yeast: yeast.to_f,
-      sourdough: sourdough.to_f,
-      salt: salt.to_f
+      yeast: yeast,
+      sourdough: sourdough,
+      salt: salt,
+      prefer_flour: prefer_flour,
+      flour: flour
     )
   end
 
@@ -136,6 +159,7 @@ class Dough
 
   # WEIGHT = 1X + percent_water*x + percent_salt*x + percent_yeast*x
   def flour_quantity
+    return flour if flour && flour > 0
     weight / (1 + percentages_except_flour) * pizzas
   end
 

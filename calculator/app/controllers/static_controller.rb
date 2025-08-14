@@ -1,6 +1,8 @@
 class StaticController < ApplicationController
+
   def index
     @dough = Dough.from_params(allowed_parameters)
+    @prefer_flour = allowed_parameters[:preferFlour] == "true"
   end
 
   def dough
@@ -22,6 +24,7 @@ class StaticController < ApplicationController
       :yeast,
       :sourdough,
       :salt,
+      :flour,
       # legacy support
       :yeast,
       :weight,
@@ -30,7 +33,8 @@ class StaticController < ApplicationController
       :salt,
       :sourdoughPercent,
       :sourdoughHydration,
-      :dryYeastPercent
+      :dryYeastPercent,
+      :preferFlour
     )
   end
 end
